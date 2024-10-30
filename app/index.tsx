@@ -1,8 +1,7 @@
 import { Text, View } from "react-native";
 import { CharacterProps } from './char';
 import CharacterDisplay from './char';
-import HabitsScreen from './Habits/habits';
-import { Habit } from './Habits/habits';
+import Habits from './Habits/habits';
 
 
 const Josh: CharacterProps = {
@@ -16,16 +15,10 @@ const Josh: CharacterProps = {
   charIcon: "assets/images/char.png"
 }
 
-const food: Habit  = {
-  id: "thisoneisfood",
-  name: "food",
-  completed: false,
-}
-
 export default function Home() {
   return (
     <div>
-      <HabitsScreen id={food.id} name={food.name} completed={food.completed} />
+      <Habits/>
       <CharacterDisplay {...Josh} />
     </div>
   );

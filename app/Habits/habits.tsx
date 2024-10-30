@@ -1,10 +1,8 @@
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:1589857330.
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:2019444264.
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:1329446611.
+
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Button } from 'react-native'; // Import necessary components
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import "./habits.css"
 
 export interface Habit {
   id: string;
@@ -12,8 +10,32 @@ export interface Habit {
   completed: boolean;
 }
 
-const HabitsScreen: React.FC = () => {
+interface HabitsProps {} // No specific props needed for now
+
+const Habits: React.FC<HabitsProps> = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [newHabitName, setNewHabitName] = useState('');
+
+
+  const addHabit = async () => {
+    if (newHabitName.trim() !== '') { 
+      const newHabit: Habit = {
+        id: Date.now().toString(), // Generate a unique ID
+        name: newHabitName,
+        completed: false,
+      };
+
+      setHabits([...habits, newHabit]); // Update habits state
+      setNewHabitName(''); // Clear input field
+
+      try {
+        await AsyncStorage.setItem('habits', JSON.stringify([...habits, newHabit])); // Store updated habits
+      } catch (error) {
+        console.error('Error storing habits:', error);
+      }
+    }
+  };
+
 
   useEffect(() => {
     loadHabits();
@@ -30,40 +52,29 @@ const HabitsScreen: React.FC = () => {
     }
   };
 
-  const saveHabits = async () => {
-    try {
-      await AsyncStorage.setItem('habits', JSON.stringify(habits));
-    } catch (error) {
-      console.error('Error saving habits:', error);
-    }
-  };
-
-
-  const toggleHabitCompletion = (id: string) => {
-    setHabits(prevHabits =>
-      prevHabits.map(habit =>
-        habit.id === id ? { ...habit, completed: !habit.completed } : habit
-      )
-    );
-    saveHabits();
-  };
-
   const renderHabit = ({ item }: { item: Habit }) => (
-    <TouchableOpacity onPress={() => toggleHabitCompletion(item.id)}>
-      <View style={styles.habitItem}>
-        <Text style={[styles.habitText, item.completed && styles.completedHabit]}>
-          {item.name}
-        </Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.habitItem}>
+      <Text style={[styles.habitText, item.completed && styles.completedHabit]}>
+        {item.name}
+      </Text>
+    </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.inputContainer}> 
+        <TextInput
+          style={styles.input}
+          placeholder="Enter new habit"
+          value={newHabitName}
+          onChangeText={setNewHabitName}
+        />
+        <Button title="Add Habit" onPress={addHabit} /> 
+      </View>
       <FlatList
         data={habits}
         renderItem={renderHabit}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
@@ -85,6 +96,17 @@ const styles = StyleSheet.create({
   completedHabit: {
     textDecorationLine: 'line-through',
   },
+  inputContainer: {
+    flexDirection: 'row', 
+    marginBottom: 10,  
+  },
+  input: {
+    flex: 1, 
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginRight: 10, 
+  },
 });
 
-export default HabitsScreen;
+export default Habits;
