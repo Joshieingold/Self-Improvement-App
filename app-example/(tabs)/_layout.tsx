@@ -32,6 +32,25 @@ export default function TabLayout() {
           ),
         }}
       />
+            <Tabs.Screen
+          name="myStuffTab" // Unique and descriptive name for the tab
+          options={{
+            title: 'My Stuff', // User-friendly title for the tab
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            ),
+          }}
+
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
